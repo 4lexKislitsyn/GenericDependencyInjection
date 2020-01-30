@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.779
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions", "Extensions\Extensions.csproj", "{2E9CC42B-CD91-4585-810D-C503E3A11437}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericDependencyInjection.Extensions", "Extensions\GenericDependencyInjection.Extensions.csproj", "{2E9CC42B-CD91-4585-810D-C503E3A11437}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
