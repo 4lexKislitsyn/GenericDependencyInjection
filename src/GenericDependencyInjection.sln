@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.779
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericDependencyInjection.Extensions", "Extensions\GenericDependencyInjection.Extensions.csproj", "{2E9CC42B-CD91-4585-810D-C503E3A11437}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenericDependencyInjection.Extensions", "Extensions\GenericDependencyInjection.Extensions.csproj", "{2E9CC42B-CD91-4585-810D-C503E3A11437}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtensionsTests", "tests\ExtensionsTests\ExtensionsTests.csproj", "{D3E8201B-08B7-4850-BDBC-AEFA51474C77}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F802F31A-2A68-4467-A4F0-51AC02669FF5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +19,16 @@ Global
 		{2E9CC42B-CD91-4585-810D-C503E3A11437}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E9CC42B-CD91-4585-810D-C503E3A11437}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E9CC42B-CD91-4585-810D-C503E3A11437}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3E8201B-08B7-4850-BDBC-AEFA51474C77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3E8201B-08B7-4850-BDBC-AEFA51474C77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3E8201B-08B7-4850-BDBC-AEFA51474C77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3E8201B-08B7-4850-BDBC-AEFA51474C77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D3E8201B-08B7-4850-BDBC-AEFA51474C77} = {F802F31A-2A68-4467-A4F0-51AC02669FF5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {87ABFF96-ACAD-4BAE-A8D5-8421FD1358D6}
