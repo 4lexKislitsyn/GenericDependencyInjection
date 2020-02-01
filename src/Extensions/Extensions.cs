@@ -1,39 +1,14 @@
-﻿using GenericDependencyInjection.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace GenericDependencyInjection.Extensions
 {
     public static class Extensions
     {
-        /// <summary>
-        /// Add all implementations of <paramref name="genericType"/> from all assemblies of current domain.
-        /// </summary>
-        /// <param name="services">Collection of service descriptors.</param>
-        /// <param name="genericType">Generic type for implementations search.</param>
-        /// <returns></returns>
-        public static IServiceCollection AddSingletonGenericImplementations(this IServiceCollection services, Type genericType)
-            => AddGenericImplementations(services, genericType, ServiceLifetime.Singleton);
-
-        /// <summary>
-        /// Add all implementations of <paramref name="genericType"/> from all assemblies of current domain.
-        /// </summary>
-        /// <param name="services">Collection of service descriptors.</param>
-        /// <param name="genericType">Generic type for implementations search.</param>
-        /// <returns></returns>
-        public static IServiceCollection AddScopedGenericImplementations(this IServiceCollection services, Type genericType)
-            => AddGenericImplementations(services, genericType, ServiceLifetime.Scoped);
-
-        /// <summary>
-        /// Add all implementations of <paramref name="genericType"/> from all assemblies of current domain.
-        /// </summary>
-        /// <param name="services">Collection of service descriptors.</param>
-        /// <param name="genericType">Generic type for implementations search.</param>
-        /// <returns></returns>
-        public static IServiceCollection AddTransientGenericImplementations(this IServiceCollection services, Type genericType)
-            => AddGenericImplementations(services, genericType, ServiceLifetime.Transient);
-
         /// <summary>
         /// Add all implementations of <paramref name="genericType"/> from all assemblies of current domain with slected lifetime.
         /// </summary>
@@ -45,7 +20,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var options = new RegistrationOptions
             {
-                Lifetime = lifetime
+                Lifetime = lifetime,
+                CallingAssembly = Assembly.GetCallingAssembly(),
             };
 
             RegisterByOptions(services, genericType, options);
@@ -61,7 +37,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IServiceCollection AddGenericImplementations(this IServiceCollection services, Type genericType, Action<RegistrationOptions> configure)
         {
-            var options = new RegistrationOptions();
+            var options = new RegistrationOptions()
+            {
+                CallingAssembly = Assembly.GetCallingAssembly()
+            };
             configure?.Invoke(options);
 
             RegisterByOptions(services, genericType, options);
@@ -77,32 +56,20 @@ namespace Microsoft.Extensions.DependencyInjection
                 return;
             }
 
-            bool FilterType(Type type) => !type.IsAbstract && !type.IsInterface
-                    && type.GetInterfaces().Any(interfaceType => interfaceType.IsGenericType);
+            var types = options.CallingAssembly.GetTypes();
 
-            Type[] genericInterfaceImplementations = null;
+            bool FilterType(Type type) => Filters.NonAbstract(type) 
+                && Filters.NonInterface(type)
+                && Filters.ImplementsGenericInterface(type);
 
-            switch (options.AssemblyToUse)
+            bool ImplementsGenericType(Type type) 
+                => type.IsGenericType && type.GetGenericTypeDefinition() == genericType;
+
+            var filteredTypes = types.Where(FilterType).ToArray();
+
+            foreach (var type in filteredTypes)
             {
-                case RegistrationOptions.SearchIn.AllAssemblies:
-                    var assemblies = AppDomain.CurrentDomain?.GetAssemblies()
-                        .Where(assembly => !options.ExcludeAssemblies.Any(filter => filter(assembly)));
-                    genericInterfaceImplementations = assemblies?.SelectMany(assembly => assembly.GetTypes().Where(FilterType))
-                        .ToArray();
-                    break;
-                case RegistrationOptions.SearchIn.OnlyCallingAssembly:
-                    genericInterfaceImplementations = Assembly.GetCallingAssembly().GetTypes().Where(FilterType).ToArray();
-                    break;
-            }
-
-            if (genericInterfaceImplementations == null)
-            {
-                return;
-            }
-
-            foreach (var type in genericInterfaceImplementations)
-            {
-                var serviceTypes = type.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == genericType);
+                var serviceTypes = type.GetInterfaces().Where(ImplementsGenericType);
 
                 if (!serviceTypes.Any() || options.ExcludeTypes.Any(filter => filter(type)))
                 {
